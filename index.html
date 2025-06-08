@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T2C Migration: LLM-Powered Code Migration</title>
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/monokai.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: #42affa;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .column {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .code-comparison {
+            display: flex;
+            gap: 20px;
+        }
+        .code-block {
+            flex: 1;
+            text-align: left;
+        }
+        .code-block pre {
+            font-size: 0.6em;
+        }
+        .pipeline-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .pipeline-box {
+            background: #1a1a2e;
+            border: 2px solid #42affa;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.8em;
+        }
+        .arrow {
+            color: #42affa;
+            font-size: 1.5em;
+        }
+        .small-list {
+            font-size: 0.8em;
+        }
+        .reveal pre code {
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Title Slide -->
+            <section>
+                <h1>T2C Migration</h1>
+                <h3>LLM-Powered Code Migration at Scale</h3>
+                <p>From TSQL to C# with Frontier Models</p>
+            </section>
+
+            <!-- LLMs: What They Are -->
+            <section>
+                <h2>Large Language Models</h2>
+                <h3>What They Are</h3>
+                <ul>
+                    <li>Transformer-based neural networks trained on massive text corpora</li>
+                    <li>Capable of understanding and generating human-like text</li>
+                    <li><i>Foundation</i> for modern AI assistants and code generation</li>
+                </ul>
+            </section>
+
+            <!-- Context Window Evolution -->
+            <section>
+                <h2>Evolution of Context Windows</h2>
+                <div class="container">
+                    <div class="column">
+                        <table style="font-size: 0.8em;">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Context Window</th>
+                                    <th>Year</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>GPT-1</td>
+                                    <td>512 tokens</td>
+                                    <td>2018</td>
+                                </tr>
+                                <tr>
+                                    <td>GPT-3</td>
+                                    <td>4K tokens</td>
+                                    <td>2020</td>
+                                </tr>
+                                <tr>
+                                    <td>GPT-4</td>
+                                    <td>128K tokens</td>
+                                    <td>2023</td>
+                                </tr>
+                                <tr>
+                                    <td>Claude 3</td>
+                                    <td>200K tokens</td>
+                                    <td>2024</td>
+                                </tr>
+                                <tr>
+                                    <td>O3 / Claude 4.7</td>
+                                    <td>2M+ tokens</td>
+                                    <td>2025</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="column">
+                        <canvas id="contextChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Frontier Model Architecture -->
+            <section>
+                <h2>Frontier Model Architecture</h2>
+                <p>Not just an LLM - a complex stack of tools</p>
+                <ul>
+                    <li><strong>Base LLM:</strong> Core transformer model</li>
+                    <li><strong>RLHF Layer:</strong> Human preference alignment</li>
+                    <li><strong>Tool Use:</strong> Function calling, code execution</li>
+                    <li><strong>Safety Filters:</strong> Content moderation</li>
+                    <li><strong>Context Management:</strong> Memory and retrieval</li>
+                    <li><strong>Inference Optimization:</strong> Batching, caching</li>
+                </ul>
+            </section>
+
+            <!-- Software Pipeline -->
+            <section>
+                <h2>Our Migration Pipeline</h2>
+                <div class="pipeline-diagram">
+                    <div class="pipeline-box">Generate C# from TSQL</div>
+                    <span class="arrow">→</span>
+                    <div class="pipeline-box">Build</div>
+                    <span class="arrow">→</span>
+                    <div class="pipeline-box">Test</div>
+                    <span class="arrow">↓</span>
+                    <div class="pipeline-box">Generate Test Classes</div>
+                    <span class="arrow">←</span>
+                    <div class="pipeline-box">Build Tests</div>
+                    <span class="arrow">←</span>
+                    <div class="pipeline-box">Run Tests</div>
+                    <span class="arrow">↓</span>
+                    <div class="pipeline-box">Compare SQL vs C#</div>
+                    <span class="arrow">→</span>
+                    <div class="pipeline-box">Fix Issues</div>
+                    <span class="arrow">→</span>
+                    <div class="pipeline-box">Improve Tests</div>
+                </div>
+            </section>
+
+            <!-- One-Shot Code Migration -->
+            <section>
+                <h2>One-Shot Code Migration Prompt</h2>
+                <div class="small-list">
+                    <h4>Initial Prompt</h4>
+                    <pre><code class="language-text">"You are a world-class software engineer migrating TSQL stored procedures to C#..."</code></pre>
+                    
+                    <h4>Gathering Target Source</h4>
+                    <pre><code class="language-csharp">// Include entire stored procedure
+CREATE PROCEDURE GetUserOrders @UserId INT AS...</code></pre>
+                    
+                    <h4>Sources of Dependencies</h4>
+                    <pre><code class="language-csharp">// Include all referenced tables, views, functions
+CREATE TABLE Orders (OrderId INT, UserId INT...)</code></pre>
+                </div>
+            </section>
+
+            <!-- One-Shot Migration Continued -->
+            <section>
+                <h2>One-Shot Code Migration (cont'd)</h2>
+                <div class="small-list">
+                    <h4>Explain Overall Architecture</h4>
+                    <pre><code class="language-text">"Target: Entity Framework Core with repository pattern, 
+async/await, proper error handling..."</code></pre>
+                    
+                    <h4>Examples</h4>
+                    <pre><code class="language-csharp">// Before: SELECT * FROM Users WHERE IsActive = 1
+// After: await _context.Users.Where(u => u.IsActive).ToListAsync()</code></pre>
+                </div>
+            </section>
+
+            <!-- Test Generation -->
+            <section>
+                <h2>One-Shot Test Generation</h2>
+                <div class="code-comparison">
+                    <div class="code-block">
+                        <h4>SQL Logic</h4>
+                        <pre><code class="language-sql">IF @OrderStatus = 'Pending'
+    SELECT * FROM Orders 
+    WHERE Status = 'P'
+ELSE IF @OrderStatus = 'Shipped'
+    SELECT * FROM Orders 
+    WHERE Status = 'S'</code></pre>
+                    </div>
+                    <div class="code-block">
+                        <h4>Generated Test</h4>
+                        <pre><code class="language-csharp">[Test]
+public async Task GetOrders_PendingStatus_ReturnsOnlyPending()
+{
+    // Arrange
+    var orders = new[] {
+        new Order { Status = "P" },
+        new Order { Status = "S" }
+    };
+    
+    // Act & Assert
+    var result = await GetOrders("Pending");
+    Assert.That(result.All(o => o.Status == "P"));
+}</code></pre>
+                    </div>
+                </div>
+                <p style="font-size: 0.7em;">Focus: Hit all code paths without superfluous test cases</p>
+            </section>
+
+            <!-- Demo Slide -->
+            <section>
+                <h2>Progress Tracking Tool</h2>
+                <p>Browser-based dashboard for monitoring migration progress</p>
+                <ul>
+                    <li>Real-time status updates</li>
+                    <li>Error tracking and resolution</li>
+                    <li>Test coverage metrics</li>
+                    <li>Performance comparisons</li>
+                </ul>
+                <p style="font-style: italic;">[Demo: Browser tool or Alt+Tab to live system]</p>
+            </section>
+
+            <!-- Issues Encountered -->
+            <section>
+                <h2>Common Migration Issues</h2>
+                <ul>
+                    <li><strong>LEFT JOIN vs .Join():</strong> Different null handling semantics</li>
+                    <li><strong>Casing:</strong> IsIBO vs. IsIbo inconsistencies</li>
+                    <li><strong>Ambiguous References:</strong> TransactionStatusCode without alias</li>
+                    <li><strong>DateTime.Now:</strong> Time zone and testability issues (✓ Fixed)</li>
+                </ul>
+                <p style="margin-top: 40px; color: #4CAF50;">✨ Core logic is understood and translated well!</p>
+            </section>
+
+            <!-- One-Shot vs Agentic -->
+            <section>
+                <h2>One-Shot vs. Agentic Approaches</h2>
+                <div class="container">
+                    <div class="column">
+                        <h3>One-Shot</h3>
+                        <ul>
+                            <li>Single prompt, complete context</li>
+                            <li>Deterministic results</li>
+                            <li>Faster execution</li>
+                            <li>Easier to debug</li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <h3>Agentic</h3>
+                        <ul>
+                            <li>Multi-step reasoning</li>
+                            <li>Can self-correct</li>
+                            <li>Handles complex cases</li>
+                            <li>Higher token usage</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Claude Code Automation -->
+            <section>
+                <h2>Automating with Claude Code</h2>
+                <h3>The Feedback Pipeline</h3>
+                <ul>
+                    <li>Each pipeline step callable from outside</li>
+                    <li>Investigative tools for debugging</li>
+                    <li>Hands-off execution</li>
+                    <li>Human-in-the-loop only at the end</li>
+                </ul>
+            </section>
+
+            <!-- Available Functions -->
+            <section>
+                <h2>Claude Code Functions</h2>
+                <div class="small-list">
+                    <ul>
+                        <li><code>migrate_stored_procedure(sp_name)</code></li>
+                        <li><code>generate_tests(cs_file)</code></li>
+                        <li><code>run_comparison_tests(sp_name, cs_method)</code></li>
+                        <li><code>analyze_test_failures(test_results)</code></li>
+                        <li><code>suggest_fixes(error_log)</code></li>
+                        <li><code>validate_migration(sp_name)</code></li>
+                    </ul>
+                </div>
+                <p style="font-style: italic; margin-top: 30px;">[Live Demo?]</p>
+            </section>
+
+            <!-- Interstellar Travel Problem -->
+            <section>
+                <h2>The Interstellar Travel Problem</h2>
+                <p>Development is moving so fast!</p>
+                <div style="text-align: center; margin: 40px 0;">
+                    <p>🚀 Launch today → 400 years to Alpha Centauri</p>
+                    <p>🚀 Launch in 50 years → 200 years</p>
+                    <p>🚀 Launch in 100 years → 50 years</p>
+                </div>
+                <p style="font-style: italic;">When to stop waiting and start building?</p>
+            </section>
+
+            <!-- Tips & Tricks -->
+            <section>
+                <h2>Tips & Tricks</h2>
+                <ul>
+                    <li><strong>Massive Context:</strong> Unlike 2024, use it all!</li>
+                    <li><strong>Be Concise:</strong> Understand deeply, constrain tightly</li>
+                    <li><strong>Fall Forward:</strong> Design prompts for success paths</li>
+                    <li><strong>Classic Techniques Still Work:</strong>
+                        <ul>
+                            <li>Roleplaying: "You are a world-class engineer..."</li>
+                            <li>Motivation: Positive encouragement (or bribery!)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Read the Guides:</strong> OpenAI, Anthropic, Google prompt guides remain valuable</li>
+                </ul>
+            </section>
+
+            <!-- Closing -->
+            <section>
+                <h1>Questions?</h1>
+                <p>Thank you!</p>
+            </section>
+        </div>
+    </div>
+
+    <script src="node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'slide',
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+
+        // Draw context window chart when the slide is shown
+        Reveal.on('slidechanged', function(event) {
+            if (event.currentSlide.querySelector('#contextChart')) {
+                drawContextChart();
+            }
+        });
+
+        // Also draw on initial load if we're on that slide
+        if (document.querySelector('.present #contextChart')) {
+            drawContextChart();
+        }
+
+        function drawContextChart() {
+            const canvas = document.getElementById('contextChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Data points
+            const data = [
+                { year: 2018, tokens: 512, model: 'GPT-1' },
+                { year: 2020, tokens: 4000, model: 'GPT-3' },
+                { year: 2023, tokens: 128000, model: 'GPT-4' },
+                { year: 2024, tokens: 200000, model: 'Claude 3' },
+                { year: 2025, tokens: 2000000, model: 'O3/Claude 4.7' }
+            ];
+            
+            // Chart dimensions
+            const padding = 60;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            
+            // Scale functions
+            const xScale = (year) => padding + ((year - 2018) / (2025 - 2018)) * chartWidth;
+            const yScale = (tokens) => height - padding - (tokens / 2000000) * chartHeight;
+            
+            // Draw axes
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            
+            // Y-axis
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.stroke();
+            
+            // X-axis
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+            
+            // Draw grid lines and labels
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Arial';
+            
+            // Y-axis labels (logarithmic scale)
+            const yLabels = [1000, 10000, 100000, 1000000, 2000000];
+            yLabels.forEach(value => {
+                const y = yScale(value);
+                ctx.beginPath();
+                ctx.moveTo(padding - 5, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+                
+                const label = value >= 1000000 ? `${value/1000000}M` : `${value/1000}K`;
+                ctx.fillText(label, 5, y + 4);
+            });
+            
+            // X-axis labels
+            for (let year = 2018; year <= 2025; year++) {
+                const x = xScale(year);
+                ctx.fillText(year, x - 15, height - padding + 20);
+            }
+            
+            // Draw line chart
+            ctx.strokeStyle = '#42affa';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            data.forEach((point, index) => {
+                const x = xScale(point.year);
+                const y = yScale(point.tokens);
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Draw points and labels
+            data.forEach(point => {
+                const x = xScale(point.year);
+                const y = yScale(point.tokens);
+                
+                // Draw point
+                ctx.fillStyle = '#42affa';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Draw model label
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.save();
+                ctx.translate(x, y - 10);
+                ctx.rotate(-Math.PI / 4);
+                ctx.fillText(point.model, 0, 0);
+                ctx.restore();
+            });
+            
+            // Axis labels
+            ctx.fillStyle = '#fff';
+            ctx.font = '14px Arial';
+            ctx.fillText('Year', width / 2 - 15, height - 10);
+            
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Context Window', -40, 20);
+            ctx.restore();
+        }
+    </script>
+</body>
+</html>
