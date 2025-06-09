@@ -11,6 +11,23 @@
         .reveal h1, .reveal h2, .reveal h3 {
             color: #42affa;
         }
+        .reveal .slides section {
+            padding-top: 20px !important;
+            top: -20px !important;
+        }
+        .reveal .slides section > h1,
+        .reveal .slides section > h2,
+        .reveal .slides section > h3 {
+            margin-top: 0 !important;
+            margin-bottom: 25px !important;
+            transform: translateY(-15px);
+        }
+        .migration-ui-list {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto;
+            width: fit-content;
+        }
         .container {
             display: flex;
             justify-content: space-between;
@@ -55,6 +72,29 @@
         .reveal pre code {
             max-height: 500px;
         }
+        .scrollable-prompt {
+            height: 500px;
+            overflow-y: auto;
+            background: #1a1a2e;
+            border: 2px solid #42affa;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7em;
+            line-height: 1.4;
+            color: #fff;
+            text-align: left;
+        }
+        .scrollable-prompt::-webkit-scrollbar {
+            width: 12px;
+        }
+        .scrollable-prompt::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        .scrollable-prompt::-webkit-scrollbar-thumb {
+            background: #42affa;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -65,6 +105,18 @@
                 <h1>T2C Migration</h1>
                 <h3>LLM-Powered Code Migration at Scale</h3>
                 <p>From TSQL to C# with Frontier Models</p>
+            </section>
+
+            <!-- Why? The Challenge -->
+            <section>
+                <h2>The Challenge</h2>
+                <ul>
+                    <li>~20 years of business logic grown into <strong>&gt; 1500 stored procs</strong></li>
+                    <li>High interdependence</li>
+                    <li>Difficult to debug and maintain</li>
+                    <li>Difficult to test</li>
+                    <li>Challenging to integrate into CI/CD pipeline with automated testing</li>
+                </ul>
             </section>
 
             <!-- LLMs: What They Are -->
@@ -134,41 +186,67 @@
                     <div class="column">
                         <ul>
                             <li><strong>Base LLM:</strong> Core transformer model</li>
-                            <li><strong>RLHF Layer:</strong> Human preference alignment</li>
-                            <li><strong>Tool Use:</strong> Function calling, code execution</li>
-                            <li><strong>Safety Filters:</strong> Content moderation</li>
-                            <li><strong>Context Management:</strong> Memory and retrieval</li>
-                            <li><strong>Inference Optimization:</strong> Batching, caching</li>
+                            <li><strong>Reasoning Engine:</strong> Chain-of-thought, planning, multi-step logic</li>
+                            <li><strong>Model Router:</strong> Directing requests to appropriate specialized models</li>
+                            <li><strong>Input/Output Processing:</strong> Request handling, response formatting</li>
                         </ul>
                     </div>
-                    <div class="column">
-                        <img src="transformer-architecture.png" alt="Transformer Architecture" style="max-width: 100%; height: auto;">
-                    </div>
+                    <!-- <div class="column">
+                        <img src="transformer-architecture.png" alt="Transformer Architecture" style="max-width: 80%; height: auto;">
+                    </div> -->
                 </div>
             </section>
 
             <!-- Software Pipeline -->
             <section>
                 <h2>Our Migration Pipeline</h2>
-                <div class="pipeline-diagram">
-                    <div class="pipeline-box">Generate C# from TSQL</div>
-                    <span class="arrow">→</span>
-                    <div class="pipeline-box">Build</div>
-                    <span class="arrow">→</span>
-                    <div class="pipeline-box">Test</div>
-                    <span class="arrow">↓</span>
-                    <div class="pipeline-box">Generate Test Classes</div>
-                    <span class="arrow">←</span>
-                    <div class="pipeline-box">Build Tests</div>
-                    <span class="arrow">←</span>
-                    <div class="pipeline-box">Run Tests</div>
-                    <span class="arrow">↓</span>
-                    <div class="pipeline-box">Compare SQL vs C#</div>
-                    <span class="arrow">→</span>
-                    <div class="pipeline-box">Fix Issues</div>
-                    <span class="arrow">→</span>
-                    <div class="pipeline-box">Improve Tests</div>
-                </div>
+                <svg width="800" height="500" viewBox="0 0 800 500" style="margin: 0 auto; display: block;">
+                    <!-- Define arrow marker -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#42affa" />
+                        </marker>
+                    </defs>
+                    
+                    <!-- Boxes -->
+                    <rect x="200" y="20" width="200" height="50" rx="8" fill="#1a1a2e" stroke="#42affa" stroke-width="2"/>
+                    <text x="300" y="50" text-anchor="middle" fill="white" font-size="16">Generate Migration</text>
+                    
+                    <rect x="200" y="100" width="200" height="50" rx="8" fill="#1a1a2e" stroke="#42affa" stroke-width="2"/>
+                    <text x="300" y="130" text-anchor="middle" fill="white" font-size="16">Build Test</text>
+                    
+                    <rect x="200" y="180" width="200" height="50" rx="8" fill="#1a1a2e" stroke="#42affa" stroke-width="2"/>
+                    <text x="300" y="210" text-anchor="middle" fill="white" font-size="16">Generate Tests</text>
+                    
+                    <rect x="200" y="260" width="200" height="50" rx="8" fill="#1a1a2e" stroke="#42affa" stroke-width="2"/>
+                    <text x="300" y="290" text-anchor="middle" fill="white" font-size="16">Build Test</text>
+                    
+                    <rect x="200" y="340" width="200" height="50" rx="8" fill="#1a1a2e" stroke="#42affa" stroke-width="2"/>
+                    <text x="300" y="370" text-anchor="middle" fill="white" font-size="16">Verify test logic</text>
+                    
+                    <rect x="200" y="420" width="200" height="50" rx="8" fill="#1a1a2e" stroke="#42affa" stroke-width="2"/>
+                    <text x="300" y="450" text-anchor="middle" fill="white" font-size="16">Verify test logic</text>
+                    
+                    <!-- Vertical arrows -->
+                    <line x1="300" y1="70" x2="300" y2="100" stroke="#42affa" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="300" y1="150" x2="300" y2="180" stroke="#42affa" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="300" y1="230" x2="300" y2="260" stroke="#42affa" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="300" y1="310" x2="300" y2="340" stroke="#42affa" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="300" y1="390" x2="300" y2="420" stroke="#42affa" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Feedback loops -->
+                    <!-- Fix build errors from Build Test to Generate Migration -->
+                    <path d="M 400 125 L 500 125 L 500 45 L 400 45" stroke="#42affa" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="520" y="85" fill="#42affa" font-size="14">Fix build errors</text>
+                    
+                    <!-- Fix build errors from second Build Test to Generate Tests -->
+                    <path d="M 400 285 L 450 285 L 450 205 L 400 205" stroke="#42affa" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="470" y="245" fill="#42affa" font-size="14">Fix build errors</text>
+                    
+                    <!-- Fix migration from Verify test logic back to Generate Migration -->
+                    <path d="M 400 445 L 550 445 L 550 45 L 400 45" stroke="#42affa" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="570" y="245" fill="#42affa" font-size="14">Fix migration</text>
+                </svg>
             </section>
 
             <!-- One-Shot Code Migration -->
@@ -176,15 +254,15 @@
                 <h2>One-Shot Code Migration Prompt</h2>
                 <div class="small-list">
                     <h4>Initial Prompt</h4>
-                    <pre><code class="language-text">"You are a world-class software engineer migrating TSQL stored procedures to C#..."</code></pre>
+                    <pre><code class="language-text">"You need to migrate SQL to C# using Entity Framework Core..."</code></pre>
                     
-                    <h4>Gathering Target Source</h4>
-                    <pre><code class="language-csharp">// Include entire stored procedure
-CREATE PROCEDURE GetUserOrders @UserId INT AS...</code></pre>
+                    <h4>Detailed Setup Explanation</h4>
+                    <pre><code class="language-text">"Stored procs in MS SQL, output in C# in this directory &lt;...&gt;, 
+use this namespace &lt;...&gt;, DB Contexts are CrmDbContext,..., 
+use DI for dependencies, create Interface as well..."</code></pre>
                     
-                    <h4>Sources of Dependencies</h4>
-                    <pre><code class="language-csharp">// Include all referenced tables, views, functions
-CREATE TABLE Orders (OrderId INT, UserId INT...)</code></pre>
+                    <h4>List of Dependencies</h4>
+                    <pre><code class="language-text">"SP: fma_web_Processors_Tier_Check, Tables:..., EF names:..."</code></pre>
                 </div>
             </section>
 
@@ -192,60 +270,72 @@ CREATE TABLE Orders (OrderId INT, UserId INT...)</code></pre>
             <section>
                 <h2>One-Shot Code Migration (cont'd)</h2>
                 <div class="small-list">
-                    <h4>Explain Overall Architecture</h4>
-                    <pre><code class="language-text">"Target: Entity Framework Core with repository pattern, 
-async/await, proper error handling..."</code></pre>
+                    <h4>Utility Functions Available</h4>
+                    <pre><code class="language-csharp">public class Functions
+{    
+    public async Task&lt;int&gt; CustomerHasFlag(string customerID, int categoryId)
+    {
+        ...</code></pre>
                     
-                    <h4>Examples</h4>
-                    <pre><code class="language-csharp">// Before: SELECT * FROM Users WHERE IsActive = 1
-// After: await _context.Users.Where(u => u.IsActive).ToListAsync()</code></pre>
+                    <h4>Example Output</h4>
+                    <pre><code class="language-csharp">public class fma_web_Limits_Check : Ifma_web_Limits_Check
+{
+    private readonly CrmDbContext _crmDbContext;
+    ...</code></pre>
+                    
+                    <h4>Further Instructions & Tweaks</h4>
+                    <pre><code class="language-text">Highest priority is perfect match of logic flow. 
+Be aware of different null handling...</code></pre>
+                </div>
+            </section>
+
+            <!-- Full Prompt Example -->
+            <section>
+                <h2>Full Migration Prompt</h2>
+                <div class="scrollable-prompt" id="fullPrompt">
+                    Loading prompt content...
                 </div>
             </section>
 
             <!-- Test Generation -->
             <section>
                 <h2>One-Shot Test Generation</h2>
-                <div class="code-comparison">
-                    <div class="code-block">
-                        <h4>SQL Logic</h4>
-                        <pre><code class="language-sql">IF @OrderStatus = 'Pending'
-    SELECT * FROM Orders 
-    WHERE Status = 'P'
-ELSE IF @OrderStatus = 'Shipped'
-    SELECT * FROM Orders 
-    WHERE Status = 'S'</code></pre>
-                    </div>
-                    <div class="code-block">
-                        <h4>Generated Test</h4>
-                        <pre><code class="language-csharp">[Test]
-public async Task GetOrders_PendingStatus_ReturnsOnlyPending()
+                <div class="small-list">
+                    <h4>SQL Logic</h4>
+                    <pre><code class="language-sql">IF @CustomerID IN ('511555') --AND @SiteID = 1
+BEGIN
+    SET @returnProcessorCode = 'Compsta3D'
+    SELECT @returnProcessorCode
+    RETURN
+END</code></pre>
+                    
+                    <h4>Generated Test</h4>
+                    <pre><code class="language-csharp">// Special customer 511555 (should return Compsta3D)
+testParams.Add(new TestParamsAndResult()
 {
-    // Arrange
-    var orders = new[] {
-        new Order { Status = "P" },
-        new Order { Status = "S" }
-    };
-    
-    // Act & Assert
-    var result = await GetOrders("Pending");
-    Assert.That(result.All(o => o.Status == "P"));
-}</code></pre>
-                    </div>
+    ParameterValues = new List&lt;object&gt;()
+    {
+        "511555", // CustomerID
+        "visa",   // CardType
+        100.00m,  // Amount
+        1,        // SiteID
+        "I",      // LocationCode
+        CreditCardNumberGenerator.GetNumberByType("visa", random) // CreditCardNo
+    }
+});</code></pre>
                 </div>
                 <p style="font-size: 0.7em;">Focus: Hit all code paths without superfluous test cases</p>
             </section>
 
             <!-- Demo Slide -->
             <section>
-                <h2>Progress Tracking Tool</h2>
+                <h2>Migration UI</h2>
                 <p>Browser-based dashboard for monitoring migration progress</p>
-                <ul>
+                <ul class="migration-ui-list">
                     <li>Real-time status updates</li>
                     <li>Error tracking and resolution</li>
-                    <li>Test coverage metrics</li>
-                    <li>Performance comparisons</li>
-                </ul>
-                <p style="font-style: italic;">[Demo: Browser tool or Alt+Tab to live system]</p>
+                    <li>Test coverage metrics</li>                    
+                </ul>                
             </section>
 
             <!-- Issues Encountered -->
@@ -255,7 +345,7 @@ public async Task GetOrders_PendingStatus_ReturnsOnlyPending()
                     <li><strong>LEFT JOIN vs .Join():</strong> Different null handling semantics</li>
                     <li><strong>Casing:</strong> IsIBO vs. IsIbo inconsistencies</li>
                     <li><strong>Ambiguous References:</strong> TransactionStatusCode without alias</li>
-                    <li><strong>DateTime.Now:</strong> Time zone and testability issues (✓ Fixed)</li>
+                    <li><strong>DateTime.Now:</strong> Time zone and testability issues</li>
                 </ul>
                 <p style="margin-top: 40px; color: #4CAF50;">✨ Core logic is understood and translated well!</p>
             </section>
@@ -300,35 +390,72 @@ public async Task GetOrders_PendingStatus_ReturnsOnlyPending()
             <!-- Available Functions -->
             <section>
                 <h2>Claude Code Functions</h2>
-                <div class="small-list">
-                    <ul>
-                        <li><code>migrate_stored_procedure(sp_name)</code></li>
-                        <li><code>generate_tests(cs_file)</code></li>
-                        <li><code>run_comparison_tests(sp_name, cs_method)</code></li>
-                        <li><code>analyze_test_failures(test_results)</code></li>
-                        <li><code>suggest_fixes(error_log)</code></li>
-                        <li><code>validate_migration(sp_name)</code></li>
-                    </ul>
+                <h3>Via dotnet run command line</h3>
+                <div class="container">
+                    <div class="column">
+                        <div class="small-list">
+                            <ul>
+                                <li><code>RunMigration(...)</code></li>
+                                <li><code>GenerateTests(...)</code></li>
+                                <li><code>RunTests(...)</code></li>
+                                <li><code>GetNextSPForConversion(...)</code></li>
+                                <li><code>GetDependencyXYZ(...)</code></li>                        
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <svg width="400" height="400" viewBox="0 0 400 400" style="margin: 0 auto; display: block;">
+                            <!-- Define arrow marker -->
+                            <defs>
+                                <marker id="arrowhead2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                                    <polygon points="0 0, 8 3, 0 6" fill="#42affa" />
+                                </marker>
+                            </defs>
+                            
+                            <!-- Claude wrapper box -->
+                            <rect x="20" y="20" width="360" height="360" rx="10" fill="none" stroke="#42affa" stroke-width="2" stroke-dasharray="8,4"/>
+                            <text x="200" y="40" text-anchor="middle" fill="#42affa" font-size="14" font-weight="bold">Claude</text>
+                            
+                            <!-- Pipeline boxes (compact) -->
+                            <rect x="150" y="60" width="100" height="30" rx="5" fill="#1a1a2e" stroke="#42affa" stroke-width="1"/>
+                            <text x="200" y="78" text-anchor="middle" fill="white" font-size="10">Generate</text>
+                            
+                            <rect x="150" y="110" width="100" height="30" rx="5" fill="#1a1a2e" stroke="#42affa" stroke-width="1"/>
+                            <text x="200" y="128" text-anchor="middle" fill="white" font-size="10">Build</text>
+                            
+                            <rect x="150" y="160" width="100" height="30" rx="5" fill="#1a1a2e" stroke="#42affa" stroke-width="1"/>
+                            <text x="200" y="178" text-anchor="middle" fill="white" font-size="10">Gen Tests</text>
+                            
+                            <rect x="150" y="210" width="100" height="30" rx="5" fill="#1a1a2e" stroke="#42affa" stroke-width="1"/>
+                            <text x="200" y="228" text-anchor="middle" fill="white" font-size="10">Build Tests</text>
+                            
+                            <rect x="150" y="260" width="100" height="30" rx="5" fill="#1a1a2e" stroke="#42affa" stroke-width="1"/>
+                            <text x="200" y="278" text-anchor="middle" fill="white" font-size="10">Verify</text>
+                            
+                            <!-- Vertical arrows -->
+                            <line x1="200" y1="90" x2="200" y2="110" stroke="#42affa" stroke-width="1.5" marker-end="url(#arrowhead2)"/>
+                            <line x1="200" y1="140" x2="200" y2="160" stroke="#42affa" stroke-width="1.5" marker-end="url(#arrowhead2)"/>
+                            <line x1="200" y1="190" x2="200" y2="210" stroke="#42affa" stroke-width="1.5" marker-end="url(#arrowhead2)"/>
+                            <line x1="200" y1="240" x2="200" y2="260" stroke="#42affa" stroke-width="1.5" marker-end="url(#arrowhead2)"/>
+                            
+                            <!-- Feedback loops (simplified) -->
+                            <path d="M 250 125 L 300 125 L 300 75 L 250 75" stroke="#42affa" stroke-width="1.5" fill="none" marker-end="url(#arrowhead2)"/>
+                            <text x="310" y="100" fill="#42affa" font-size="8">Fix</text>
+                            
+                            <path d="M 250 225 L 280 225 L 280 175 L 250 175" stroke="#42affa" stroke-width="1.5" fill="none" marker-end="url(#arrowhead2)"/>
+                            <text x="290" y="200" fill="#42affa" font-size="8">Fix</text>
+                            
+                            <path d="M 250 275 L 320 275 L 320 75 L 250 75" stroke="#42affa" stroke-width="1.5" fill="none" marker-end="url(#arrowhead2)"/>
+                            <text x="330" y="175" fill="#42affa" font-size="8">Fix migration</text>
+                        </svg>
+                    </div>
                 </div>
-                <p style="font-style: italic; margin-top: 30px;">[Live Demo?]</p>
             </section>
-
-            <!-- Interstellar Travel Problem -->
-            <section>
-                <h2>The Interstellar Travel Problem</h2>
-                <p>Development is moving so fast!</p>
-                <div style="text-align: center; margin: 40px 0;">
-                    <p>🚀 Launch today → 400 years to Alpha Centauri</p>
-                    <p>🚀 Launch in 50 years → 200 years</p>
-                    <p>🚀 Launch in 100 years → 50 years</p>
-                </div>
-                <p style="font-style: italic;">When to stop waiting and start building?</p>
-            </section>
-
             <!-- Tips & Tricks -->
             <section>
-                <h2>Tips & Tricks</h2>
+                <h2>Learnings, Tips & Tricks</h2>
                 <ul>
+                    <li><strong>Things are moving fast!</strong></li>
                     <li><strong>Massive Context:</strong> Unlike 2024, use it all!</li>
                     <li><strong>Be Concise:</strong> Understand deeply, constrain tightly</li>
                     <li><strong>Fall Forward:</strong> Design prompts for success paths</li>
@@ -368,12 +495,22 @@ public async Task GetOrders_PendingStatus_ReturnsOnlyPending()
             if (event.currentSlide.querySelector('#contextChart')) {
                 drawContextChart();
             }
+            if (event.currentSlide.querySelector('#fullPrompt')) {
+                loadFullPrompt();
+            }
         });
 
         // Also draw on initial load if we're on that slide
         if (document.querySelector('.present #contextChart')) {
             drawContextChart();
         }
+        
+        // Check for prompt content on initial load
+        setTimeout(function() {
+            if (document.querySelector('.present #fullPrompt')) {
+                loadFullPrompt();
+            }
+        }, 500);
 
         function drawContextChart() {
             const canvas = document.getElementById('contextChart');
@@ -493,6 +630,679 @@ public async Task GetOrders_PendingStatus_ReturnsOnlyPending()
             ctx.fillText('Context Window', -40, 20);
             ctx.restore();
         }
+
+        function loadFullPrompt() {
+            const promptContainer = document.getElementById('fullPrompt');
+            console.log('loadFullPrompt called, container:', promptContainer);
+            console.log('FULL_PROMPT_CONTENT defined:', typeof FULL_PROMPT_CONTENT !== 'undefined');
+            
+            if (!promptContainer || promptContainer.dataset.loaded) return;
+            
+            // Use embedded content instead of fetch
+            if (typeof FULL_PROMPT_CONTENT !== 'undefined') {
+                promptContainer.innerHTML = `<pre style="margin: 0; white-space: pre-wrap;">${FULL_PROMPT_CONTENT}</pre>`;
+                promptContainer.dataset.loaded = 'true';                
+            } else {
+                promptContainer.innerHTML = '<p style="color: #ff6b6b;"></p>';                
+            }
+        }
+    </script>
+
+    <!-- Embedded prompt content -->
+    <script>
+        const FULL_PROMPT_CONTENT = `Hi! I need you to migrate the stored procedure fd_fma_web_TransactionTmp_CRE_Read to C# using Entity Framework Core.
+
+Accuracy is most important in mapping from TSQL to C#.
+
+The stored procs are from MS SQL. The output must be exactly one C# source file (supporting functions and classes must be 
+contained within this file).
+
+The code must be in the 'FMA2.UseCases.Implementations' namespace and should be named fd_fma_web_TransactionTmp_CRE_Read.cs.
+
+For database access the relevant models are provided below. 
+The generated C# must produce the same output as the original SPs with the same input.
+Do not worry about performance. This includes code that is commented out. 
+Leave these as comments, where posssible.
+
+Any clean up to make the code adhere to best practices will follow in a later step.
+
+The Db contexts are called CrmDbContext (most tables) and AsiDbContext (for tbCustomer 
+and other tables starting with tb).
+The Contexts are in the EFModels.CrmData and EFModels.AsiData namespaces for crm and asiDb, the Models 
+in EFModels.CrmModel and EFModels.AsiModel. Ensure all 4 are imported in the generated code.
+
+The Models are for EF core. So for date functions DateTime.Now.Date, for example, would work.
+
+The system uses dependency injection. Assume that any dependencies are already registered in the DI container and inject them
+in the constructor. 
+
+Assume any dependent stored procedures are already migrated to C# and you can inject them in the constructor via DI. 
+
+So if the original contains:
+
+EXEC OtherStoredProc
+
+migrate that to using the injected service (I<otherSPName>)...
+
+The crmDbContext and asiDbContext should be supplied in the constructor and then assigned a private field for usage in the class.
+
+This is a very complex task. Take all the time you need to ensure the SQL is translated properly
+and the same inputs result in the same outputs. Think it through step by step.
+Slow is smooth, smooth is fast. 
+
+Because of timing complexities and DI, implement the function as a pure function that does not rely on private properties to hold data.
+If needed, you can create private classes and structs to organize things better.
+
+Make a plan first for how to tackle this and then execute it fully.
+
+Having the most accurate representation of the T-SQL in C# is imperative.
+
+Here comes the SP to convert and the relevant context and dependencies:
+
+
+--GRANT EXEC ON fd_fma_web_TransactionTmp_CRE_Read TO CRMWEBUSER
+--EXEC fd_fma_web_TransactionTmp_CRE_Read 623401 
+-- ==================================================================================
+-- Author					:		Yong Yan
+-- Create date				:		May 10,2011
+-- Description				:		Read Transaction Info from cre tmp table
+-- Procedure_name			:       fd_fma_web_TransactionTmp_CRE_Read
+-- 2023-07-05 Dsaravia		:		Added alias to tables
+-- ==================================================================================
+-- Strip Zip 09/15/2012
+
+CREATE PROCEDURE [dbo].[fd_fma_web_TransactionTmp_CRE_Read]
+@tmpTransId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @CustomerID	VARCHAR(10)
+	DECLARE @IpAddress	VARCHAR(15)
+
+	DECLARE @FirstName VARCHAR(100)
+	DECLARE @LastName VARCHAR(100)
+	DECLARE @Address VARCHAR(255)
+	DECLARE @City VARCHAR(100)
+	DECLARE @State VARCHAR(10)
+	DECLARE @Country VARCHAR(2)
+	DECLARE @CountryCode3 VARCHAR(3)
+	DECLARE @Zip VARCHAR(15)
+    DECLARE @phone VARCHAR(20)
+
+	SELECT @CustomerID = CustomerID FROM fmaTransactionsTEMP_CRE WHERE TransactionID = @tmpTransId
+	EXEC fma_web_Customer_IpAddress_Read @CustomerID, @IpAddress OUTPUT
+
+    SELECT TOP 1 @phone = PhoneNumber FROM [main].[fn_CustomerPhones] (@CustomerID) ORDER BY Preferred DESC, Mobile DESC
+
+	SELECT TOP 1
+		@FirstName = CASE WHEN CHARINDEX(' ', NameOnCard) > 0 
+						THEN SUBSTRING(NameOnCard, 1, LEN(NameOnCard) - CHARINDEX(' ', REVERSE(NameOnCard)))
+						ELSE NULL END,
+		@LastName = CASE WHEN CHARINDEX(' ', NameOnCard) > 0
+						THEN REVERSE(SUBSTRING(REVERSE(NameOnCard), 1, CHARINDEX(' ', REVERSE(NameOnCard)) - 1))
+						ELSE NULL END,
+		@Address = CustomerAddress.[Address],
+		@City = CustomerAddress.City,
+		@State = crmStates.StateShortName,
+		@Country = crmCountries.CountryNameShort,
+		@CountryCode3 = crmCountries.CountryNameShort2,
+		@Zip = CASE WHEN crmCountries.CountryNameShort = 'US' THEN LEFT(CustomerAddress.ZipCode, 5) ELSE CustomerAddress.ZipCode END
+	FROM
+		fmaTransactionsTEMP_CRE
+	INNER JOIN
+		fmaCreditCards
+	ON
+		fmaCreditCards.CustomerID = fmaTransactionsTEMP_CRE.CustomerID
+	AND
+		fmaCreditCards.CreditCardID = fmaTransactionsTEMP_CRE.CreditCardId
+	--AND
+	--	fmaCreditCards.CCNumber = fmaTransactionsTEMP_CRE.CardNo
+	--AND
+	--	fmaCreditCards.IsAssociated = 1
+	LEFT JOIN
+		main.Customer_Address AS CustomerAddress
+	ON
+		CustomerAddress.CustomerId = fmaCreditCards.CustomerId
+	AND
+		CustomerAddress.AddressId = ISNULL(fmaCreditCards.AddressId, -1)
+	LEFT JOIN
+		crmCountries
+	ON 
+		crmCountries.CountryId = CustomerAddress.CountryId
+	LEFT JOIN 
+		crmStates
+	ON 
+		crmStates.StateId = CustomerAddress.StateId
+	WHERE
+		TransactionID = @tmpTransId
+
+	SELECT		T.TransactionID,
+				CustomerID		=	T.CustomerID,
+				CardType		=	ISNULL(RTRIM(LTRIM(T.CardType)), ''),
+				CardNo			=	ISNULL(RTRIM(LTRIM(T.CardNo)), ''),
+				CVV				=	ISNULL(RTRIM(LTRIM(T.Cvv)), ''),
+				ExpirationDate	=	REPLACE(ISNULL(RTRIM(LTRIM(T.ExpirationDate)), ''),'/','20'),
+				Amount			=	CAST(FORMAT(ISNULL(T.Amount,0),'N2') AS MONEY),
+				SiteID			=	T.SiteID,
+				T.BonusID,
+				FirstName		=	ISNULL(@FirstName, REPLACE(ISNULL(C.NameFirst, ''), '&', '')),
+				LastName		=	ISNULL(@LastName, REPLACE(ISNULL(C.NameLast, ''), '&', '')),
+				[Address]		=	CASE WHEN ISNULL(@Address, '') <> '' THEN @Address ELSE REPLACE(ISNULL(C.Address, ''), '&', '') END,
+				City			=	CASE WHEN ISNULL(@Address, '') <> '' THEN @City ELSE ISNULL(C.City, '') END,
+				[State]			=	CASE WHEN ISNULL(@Address, '') <> '' THEN @State ELSE ISNULL(C.State, '') END,
+				Country			=	CASE WHEN ISNULL(@Address, '') <> '' THEN @Country ELSE ISNULL(C.Country, '') END,
+				CountryCode3	=	CASE WHEN ISNULL(@Address, '') <> '' THEN @CountryCode3 ELSE ISNULL(CT.CountryNameShort2,'USA') END,
+				Zip				=	CASE WHEN ISNULL(@Address, '') <> '' THEN @Zip ELSE LEFT(ISNULL(C.Zip, ''),5) END,
+                Email           =   CASE WHEN C.EMail IS NULL OR C.EMail = '' THEN RTRIM(C.CustomerID) + '@DepositConfirm.com' 
+                                    ELSE CASE 
+                                            WHEN C.EMail LIKE '%-AVACES%' THEN SUBSTRING(C.EMail, 0,LEN(C.EMail)-6) 
+                                            WHEN C.EMail LIKE '%-ASLOTS%' THEN SUBSTRING(C.EMail, 0,LEN(C.EMail)-6) 
+                                            ELSE C.EMail
+                                        END 	
+                                    END,	
+				PhoneNumber		=	ISNULL(@phone, ''),
+				PhoneCode		=	ISNULL(CT.PhoneCode,'1'),
+				Dob				=	ISNULL(P.BirthDate, '1/1/1980'),
+				IPAddress		=	ISNULL(@IpAddress,''),
+				SessionId		=	CAST(ISNULL(T.LogSessionID, '') AS VARCHAR),
+				NumericCode		=	ISNULL(CT.NumericCode,''),
+                CAST([fma].[fn_IsValhallaAccount] (@CustomerID) AS BIT)     AS 'IsValhallaAccount'
+	FROM		fmaTransactionsTEMP_CRE T
+	LEFT JOIN	ASIDb.dbo.tbCustomer C WITH(NOLOCK)
+				ON T.CustomerID = C.CustomerID
+	LEFT JOIN	crmProfiles P WITH(NOLOCK)
+				ON P.CustomerID = C.CustomerID
+	LEFT JOIN	crmCountries AS CT
+				ON C.Country = CT.CountryNameShort
+	WHERE		TransactionID = @tmpTransId
+
+END
+
+Following are the dependencies of this stored procedure:
+
+
+/*
+ ==========================================================================================
+   Test:
+		SELECT * FROM [main].[fn_CustomerPhones] ('131029')
+   Revisions:	
+		2015-11-23 Created. Returns active customer phones - Soheil
+		2019-07-19 Enhanced to add more details
+		2019-09-27 Removed properties not used, added call info
+==========================================================================================
+*/
+CREATE FUNCTION [main].[fn_CustomerPhones] ( @CustomerID VARCHAR(10) )
+RETURNS TABLE
+    AS
+RETURN
+    ( SELECT    OP.ObjectPropertyId ,
+                [Value] AS PhoneNumber ,
+				OP.FromDate,
+				OP.FromObjectId,
+				-- CASE WHEN OPC2.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS IsLandline ,
+				-- CASE WHEN OPC3.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS Prepaid ,
+				CAST(CASE WHEN OPC4.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS BIT) AS Mobile ,
+				-- CASE WHEN OPC5.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS Voip ,
+				CAST(CASE WHEN OPC6.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS BIT) AS HomePhone,
+				-- CASE WHEN OPC7.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS BusinessPhone ,
+				CAST(CASE WHEN OPC8.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS BIT) AS Preferred ,
+				-- CASE WHEN OPC9.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS Verified ,
+				-- CASE WHEN OPC10.ObjectPropertyId is NOT NULL THEN 1 ELSE 0 END AS Disconnected
+				opci.InboundCallCount,
+				opci.OutboundCallCount
+      FROM      dbo.crmProfiles P 
+                JOIN main.[ObjectProperty] OP ON OP.ObjectId = P.ObjectId
+                JOIN main.ObjectPropertyCategory OPC1 ON OPC1.ObjectPropertyId = OP.ObjectPropertyId
+                --LEFT JOIN main.ObjectPropertyCategory OPC2 ON OPC2.ObjectPropertyId = OP.ObjectPropertyId
+                --                                              AND OPC2.CategoryId = 17001 AND OPC2.IsActive = 1
+                --LEFT JOIN main.ObjectPropertyCategory OPC3 ON OPC3.ObjectPropertyId = OP.ObjectPropertyId
+                --                                              AND OPC3.CategoryId = 17002 AND OPC3.IsActive = 1 
+                LEFT JOIN main.ObjectPropertyCategory OPC4 ON OPC4.ObjectPropertyId = OP.ObjectPropertyId
+                                                              AND OPC4.CategoryId = 17003 AND OPC4.IsActive = 1
+                --LEFT JOIN main.ObjectPropertyCategory OPC5 ON OPC5.ObjectPropertyId = OP.ObjectPropertyId
+                --                                              AND OPC5.CategoryId = 17004 AND OPC5.IsActive = 1
+                LEFT JOIN main.ObjectPropertyCategory OPC6 ON OPC6.ObjectPropertyId = OP.ObjectPropertyId
+                                                              AND OPC6.CategoryId = 17005 AND OPC6.IsActive = 1
+                --LEFT JOIN main.ObjectPropertyCategory OPC7 ON OPC7.ObjectPropertyId = OP.ObjectPropertyId
+                --                                              AND OPC7.CategoryId = 17006 AND OPC7.IsActive = 1
+                LEFT JOIN main.ObjectPropertyCategory OPC8 ON OPC8.ObjectPropertyId = OP.ObjectPropertyId
+                                                              AND OPC8.CategoryId = 17007 AND OPC8.IsActive = 1
+                --LEFT JOIN main.ObjectPropertyCategory OPC9 ON OPC9.ObjectPropertyId = OP.ObjectPropertyId
+                --                                              AND OPC9.CategoryId = 17008 AND OPC9.IsActive = 1
+                --LEFT JOIN main.ObjectPropertyCategory OPC10 ON OPC10.ObjectPropertyId = OP.ObjectPropertyId
+                --                                              AND OPC10.CategoryId = 17009 AND OPC10.IsActive = 1
+                LEFT JOIN main.ObjectProperty_CallInfo AS opci ON opci.ObjectPropertyId = OP.ObjectPropertyId
+      WHERE     OPC1.CategoryId = 4001 -- Phone Number
+                AND OPC1.IsActive = 1
+                AND P.CustomerID = @CustomerID
+    )
+
+
+
+-- ==========================================================
+-- Author:		Yong
+-- Create date: 2023-07-14
+-- Description: return whether customer is from Valhalla
+-- ==========================================================
+CREATE     FUNCTION [fma].[fn_IsValhallaAccount] 
+(
+	@customerId	varchar(10)
+)
+RETURNS BIT
+AS
+BEGIN
+	IF (SELECT A.MasterAgentId FROM [ASIDb].[dbo].tbCustomer C LEFT JOIN [ASIDb].[dbo].tbAgent A ON C.AgentId = A.AgentID
+						WHERE CustomerId = @customerId) IN ('ACASINO','ACASINOTES')
+		RETURN 1
+
+	RETURN 0
+
+END
+
+Following are the tables and views used:
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+CREATE TABLE [dbo].[crmCountries](
+	[CountryID] [int] IDENTITY(1,1) NOT NULL,
+	[CountryName] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[CountryNameShort] [char](2) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[Is4Web] [bit] NOT NULL,
+	[Is4IMSCall] [bit] NOT NULL,
+	[IsBlockCC] [bit] NOT NULL,
+	[AllowJoin] [bit] NOT NULL,
+	[CountryNameShort2] [char](3) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[CountryOrder] [smallint] NULL,
+	[PhoneCode] [varchar](3) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[TimeZoneDiff] [decimal](3, 0) NULL,
+	[IsGeoIpAccepted] [bit] NULL,
+	[Area] [varchar](20) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[NumericCode] [char](3) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[IsBlockCrypto] [bit] NOT NULL
+) ON [PRIMARY]
+
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+CREATE TABLE [dbo].[crmProfiles](
+	[CustomerID] [varchar](10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[Mobile] [varchar](25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[MotherMaidenName] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[ContactPreferenceID] [int] NULL,
+	[SportType1ID] [int] NULL,
+	[SportType2ID] [int] NULL,
+	[SportType3ID] [int] NULL,
+	[ReferralPercentageID] [int] NULL,
+	[CustomerValueID] [int] NULL,
+	[NoSpouseFlag] [bit] NULL,
+	[CancelID] [int] NULL,
+	[PhoneNumberID] [int] NULL,
+	[NameFirst] [varchar](30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[NameLast] [varchar](30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[Password] [varchar](25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[NoBonusFlag] [bit] NULL,
+	[BornCity] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[BirthDate] [smalldatetime] NULL,
+	[IsOnlyForFootball] [bit] NULL,
+	[IsNoBonus] [bit] NULL,
+	[IsNoneRecreational] [bit] NULL,
+	[IsAveragePlayer] [bit] NULL,
+	[IsReceivingEMail] [bit] NULL,
+	[HasRecordingFile] [bit] NULL,
+	[IsPokerCustomer] [bit] NULL,
+	[Gender] [char](1) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[OddsDisplayFormat] [char](1) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[OtherPhone] [varchar](25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[NoVoiceMail] [bit] NULL,
+	[UserID] [int] NULL,
+	[JoinDate] [datetime] NULL,
+	[IsCollections] [bit] NULL,
+	[CustState] [varchar](2) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[CustCountry] [varchar](30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[IsActive] [bit] NULL,
+	[ActiveCustomerID] [varchar](10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[BrontoContactID] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[IsRivalCustomer] [bit] NULL,
+	[VIPDate] [datetime] NULL,
+	[SBCustomerID] [varchar](10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[BrontoStatus] [varchar](20) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[IsRivalSB] [bit] NULL,
+	[IsDisConnected] [bit] NULL,
+	[HighRisk] [bit] NULL,
+	[IsNoDepConfEmail] [bit] NULL,
+	[isNewBonusStructure] [bit] NULL,
+	[IsAutoMobileUpdateOld] [bit] NULL,
+	[IsVerifyAddress] [bit] NULL,
+	[IsInvalidEmail] [bit] NULL,
+	[IsMainAccount] [bit] NULL,
+	[IsRetentionCustomer] [bit] NULL,
+	[Language] [varchar](2) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[IsSecurity] [bit] NULL,
+	[SiteID] [int] NULL,
+	[IsSpousalContactOk] [bit] NULL,
+	[FMCBalance] [money] NULL,
+	[IsAccountLocked] [bit] NULL,
+	[HasCashDeposit] [bit] NULL,
+	[IsAutoMobileUpdate] [char](1) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[BlockInetDeposit] [bit] NULL,
+	[HasBW] [bit] NULL,
+	[ClosedDomainNotice] [bit] NOT NULL,
+	[IsBlockReferral] [bit] NULL,
+	[ProxyID] [int] NULL,
+	[IsNoPayout] [bit] NULL,
+	[Deceased] [bit] NULL,
+	[NoSpecialBonus] [bit] NULL,
+	[ObjectID] [int] NULL,
+	[IsNoCall] [bit] NULL,
+	[NoCallUntil] [datetime] NULL,
+	[IsAddressOnly4Mailer] [bit] NULL,
+	[NoCashPreauth] [bit] NULL,
+	[IsNoCasinoBonus] [bit] NULL,
+	[NameMiddle] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[NoPopUpMarketing] [bit] NULL,
+	[IsNoSMS] [bit] NULL,
+	[NoFreeBets] [bit] NULL,
+	[HashedPassword] [varchar](250) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
+) ON [PRIMARY]
+
+Following is an example of a migrated stored procedure: 
+using EFModels.AsiData;
+using EFModels.CrmData;
+using FMA2.UseCases.Interfaces;
+using FMA2.UseCases.Utility;
+
+namespace FMA2.UseCases.Implementations
+{
+    public class fmaMigrationExample : IfmaMigrationExample
+    {
+        // DB contexts
+        private readonly CrmDbContext _crmDbContext;
+        private readonly AsiDbContext _asiDbContext;
+        // Helper class instance
+        private readonly IFunctions _functions;
+        // Other dependencies, already migrated stored procedures, etc.
+        private readonly Ifma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid _fma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid;
+
+        public fmaMigrationExample(CrmDbContext crmDbContext, AsiDbContext asiDbContext,
+            IFunctions functions, Ifma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid fma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid)
+        {
+            _crmDbContext = crmDbContext;
+            _asiDbContext = asiDbContext;
+            _functions = functions;
+            _fma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid = fma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid;
+        }
+
+        // Migrated Code
+        public async Task<string> ExecuteAsync(string customerID, string cardType, decimal amount, int siteID, string locationCode = "C", string creditCardNo = "")
+        {
+            // Migrated stored procedure code
+            var retVal = "Some return value";
+            // Some dependency: _fma_web_Processors_AutoSelect_CRE_Limit_Check_4AllMid.ExecuteAsync(...);
+            return retVal;
+        }
+    }
+}
+
+
+
+Only focus on migrating the fd_fma_web_TransactionTmp_CRE_Read stored procedure and doing it accurately. Do not create placeholders for other stored procedures. The code must be in one file only, a single class with a single function to call. 
+More code than that will break the automated processing.
+If needed, add some explanation. But do not include any other source code besides the migrated stored procedure.
+
+Be careful with subtle differences in SQL vs. C#. For example:
+- How NULL/empty strings are handled in both
+- Upper/lower casing 
+- How Any() is handled vs. a sub query not returning any rows and be careful with other such edge cases.
+# Migrating fd_fma_web_TransactionTmp_CRE_Read to C#
+
+Let me analyze the stored procedure and create an accurate C# implementation using Entity Framework Core.
+
+\`\`\`csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EFModels.AsiData;
+using EFModels.AsiModel;
+using EFModels.CrmData;
+using EFModels.CrmModel;
+using FMA2.UseCases.Interfaces;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+
+namespace FMA2.UseCases.Implementations
+{
+    public class fd_fma_web_TransactionTmp_CRE_Read : Ifd_fma_web_TransactionTmp_CRE_Read
+    {
+        private readonly CrmDbContext _crmDbContext;
+        private readonly AsiDbContext _asiDbContext;
+        private readonly Ifma_web_Customer_IpAddress_Read _fma_web_Customer_IpAddress_Read;
+        private readonly IFunctions _functions;
+
+        public fd_fma_web_TransactionTmp_CRE_Read(
+            CrmDbContext crmDbContext,
+            AsiDbContext asiDbContext,
+            Ifma_web_Customer_IpAddress_Read fma_web_Customer_IpAddress_Read,
+            IFunctions functions)
+        {
+            _crmDbContext = crmDbContext;
+            _asiDbContext = asiDbContext;
+            _fma_web_Customer_IpAddress_Read = fma_web_Customer_IpAddress_Read;
+            _functions = functions;
+        }
+
+        public async Task<IEnumerable<TransactionResult>> ExecuteAsync(int tmpTransId)
+        {
+            // Declare variables similar to the stored procedure
+            string customerId = null;
+            string ipAddress = null;
+            string firstName = null;
+            string lastName = null;
+            string address = null;
+            string city = null;
+            string state = null;
+            string country = null;
+            string countryCode3 = null;
+            string zip = null;
+            string phone = null;
+
+            // Get customer ID from transaction
+            customerId = await _crmDbContext.fmaTransactionsTEMP_CREs
+                .Where(t => t.TransactionID == tmpTransId)
+                .Select(t => t.CustomerID)
+                .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                return new List<TransactionResult>();
+            }
+
+            // Get customer IP address
+            ipAddress = await _fma_web_Customer_IpAddress_Read.ExecuteAsync(customerId);
+
+            // Get phone number
+            var phoneQuery = "SELECT TOP 1 PhoneNumber FROM [main].[fn_CustomerPhones](@CustomerId) ORDER BY Preferred DESC, Mobile DESC";
+            var phoneParam = new SqlParameter("@CustomerId", customerId);
+            phone = await _crmDbContext.Database.SqlQuery<string>(phoneQuery, phoneParam)
+                .FirstOrDefaultAsync() ?? string.Empty;
+
+            // Get customer name and address details
+            var customerDetails = await (from trans in _crmDbContext.fmaTransactionsTEMP_CREs
+                              join creditCard in _crmDbContext.fmaCreditCards
+                                  on new { trans.CustomerID, CreditCardId = trans.CreditCardId } 
+                                  equals new { creditCard.CustomerID, CreditCardId = creditCard.CreditCardID }
+                              //AND
+                              //	fmaCreditCards.CCNumber = fmaTransactionsTEMP_CRE.CardNo
+                              //AND
+                              //	fmaCreditCards.IsAssociated = 1
+                              join customerAddress in _crmDbContext.Customer_Addresses
+                                  on new { creditCard.CustomerId, AddressId = (int?)(creditCard.AddressId ?? -1) } 
+                                  equals new { customerAddress.CustomerId, customerAddress.AddressId }
+                              into custAddrJoin
+                              from customerAddress in custAddrJoin.DefaultIfEmpty()
+                              join crmCountry in _crmDbContext.crmCountries
+                                  on customerAddress.CountryId equals crmCountry.CountryID
+                              into countryJoin
+                              from crmCountry in countryJoin.DefaultIfEmpty()
+                              join crmState in _crmDbContext.crmStates
+                                  on customerAddress.StateId equals crmState.StateID
+                              into stateJoin
+                              from crmState in stateJoin.DefaultIfEmpty()
+                              where trans.TransactionID == tmpTransId
+                              select new
+                              {
+                                  creditCard.NameOnCard,
+                                  Address = customerAddress != null ? customerAddress.Address : null,
+                                  City = customerAddress != null ? customerAddress.City : null,
+                                  State = crmState != null ? crmState.StateShortName : null,
+                                  Country = crmCountry != null ? crmCountry.CountryNameShort : null,
+                                  CountryCode3 = crmCountry != null ? crmCountry.CountryNameShort2 : null,
+                                  ZipCode = customerAddress != null ? customerAddress.ZipCode : null,
+                                  IsUS = crmCountry != null && crmCountry.CountryNameShort == "US"
+                              }).FirstOrDefaultAsync();
+
+            if (customerDetails != null)
+            {
+                // Parse first and last name from NameOnCard if it contains a space
+                if (!string.IsNullOrEmpty(customerDetails.NameOnCard) && customerDetails.NameOnCard.Contains(" "))
+                {
+                    // Reproduce the SQL CHARINDEX/SUBSTRING logic for extracting names
+                    var nameOnCard = customerDetails.NameOnCard;
+                    var reversedName = new string(nameOnCard.Reverse().ToArray());
+                    var lastSpacePos = reversedName.IndexOf(" ");
+                    
+                    if (lastSpacePos >= 0)
+                    {
+                        firstName = nameOnCard.Substring(0, nameOnCard.Length - lastSpacePos);
+                        lastName = new string(reversedName.Substring(0, lastSpacePos).Reverse().ToArray());
+                    }
+                }
+
+                address = customerDetails.Address;
+                city = customerDetails.City;
+                state = customerDetails.State;
+                country = customerDetails.Country;
+                countryCode3 = customerDetails.CountryCode3;
+                
+                // Handle zip code formatting based on country
+                if (customerDetails.IsUS && !string.IsNullOrEmpty(customerDetails.ZipCode))
+                {
+                    zip = customerDetails.ZipCode.Length > 5 
+                        ? customerDetails.ZipCode.Substring(0, 5) 
+                        : customerDetails.ZipCode;
+                }
+                else
+                {
+                    zip = customerDetails.ZipCode;
+                }
+            }
+
+            // Final query to get all transaction details
+            var result = await (from trans in _crmDbContext.fmaTransactionsTEMP_CREs
+                              join customer in _asiDbContext.tbCustomers
+                                  on trans.CustomerID equals customer.CustomerID into custJoin
+                              from customer in custJoin.DefaultIfEmpty()
+                              join profile in _crmDbContext.crmProfiles
+                                  on customer.CustomerID equals profile.CustomerID into profileJoin
+                              from profile in profileJoin.DefaultIfEmpty()
+                              join countryTable in _crmDbContext.crmCountries
+                                  on customer.Country equals countryTable.CountryNameShort into ctJoin
+                              from countryTable in ctJoin.DefaultIfEmpty()
+                              where trans.TransactionID == tmpTransId
+                              select new TransactionResult
+                              {
+                                  TransactionID = trans.TransactionID,
+                                  CustomerID = trans.CustomerID,
+                                  CardType = string.IsNullOrEmpty(trans.CardType) ? "" : trans.CardType.Trim(),
+                                  CardNo = string.IsNullOrEmpty(trans.CardNo) ? "" : trans.CardNo.Trim(),
+                                  CVV = string.IsNullOrEmpty(trans.CVV) ? "" : trans.CVV.Trim(),
+                                  ExpirationDate = string.IsNullOrEmpty(trans.ExpirationDate) ? "" : trans.ExpirationDate.Trim().Replace("/", "20"),
+                                  Amount = trans.Amount,
+                                  SiteID = trans.SiteID,
+                                  BonusID = trans.BonusID,
+                                  FirstName = firstName ?? (customer != null && !string.IsNullOrEmpty(customer.NameFirst) 
+                                            ? customer.NameFirst.Replace("&", "") : ""),
+                                  LastName = lastName ?? (customer != null && !string.IsNullOrEmpty(customer.NameLast) 
+                                           ? customer.NameLast.Replace("&", "") : ""),
+                                  Address = !string.IsNullOrEmpty(address) ? address : (customer != null && !string.IsNullOrEmpty(customer.Address) 
+                                         ? customer.Address.Replace("&", "") : ""),
+                                  City = !string.IsNullOrEmpty(address) ? city : (customer != null ? customer.City ?? "" : ""),
+                                  State = !string.IsNullOrEmpty(address) ? state : (customer != null ? customer.State ?? "" : ""),
+                                  Country = !string.IsNullOrEmpty(address) ? country : (customer != null ? customer.Country ?? "" : ""),
+                                  CountryCode3 = !string.IsNullOrEmpty(address) ? countryCode3 : (countryTable != null ? countryTable.CountryNameShort2 : "USA"),
+                                  Zip = !string.IsNullOrEmpty(address) ? zip : (customer != null && !string.IsNullOrEmpty(customer.Zip) 
+                                      ? (customer.Zip.Length > 5 ? customer.Zip.Substring(0, 5) : customer.Zip) : ""),
+                                  Email = customer != null 
+                                      ? (string.IsNullOrEmpty(customer.EMail) 
+                                          ? customer.CustomerID.Trim() + "@DepositConfirm.com" 
+                                          : (customer.EMail.Contains("-AVACES") 
+                                              ? customer.EMail.Substring(0, customer.EMail.Length - 6)
+                                              : (customer.EMail.Contains("-ASLOTS") 
+                                                  ? customer.EMail.Substring(0, customer.EMail.Length - 6) 
+                                                  : customer.EMail))) 
+                                      : "",
+                                  PhoneNumber = phone ?? "",
+                                  PhoneCode = countryTable != null ? countryTable.PhoneCode : "1",
+                                  Dob = profile != null && profile.BirthDate.HasValue 
+                                      ? profile.BirthDate.Value.ToString("M/d/yyyy") 
+                                      : "1/1/1980",
+                                  IPAddress = ipAddress ?? "",
+                                  SessionId = trans.LogSessionID.HasValue ? trans.LogSessionID.Value.ToString() : "",
+                                  NumericCode = countryTable != null ? countryTable.NumericCode : "",
+                                  // We'll set this after the query
+                                  IsValhallaAccount = false
+                              }).ToListAsync();
+
+            // Set the IsValhallaAccount property for each result
+            foreach (var item in result)
+            {
+                item.IsValhallaAccount = await _functions.IsValhallaAccountAsync(item.CustomerID);
+            }
+
+            return result;
+        }
+
+        public class TransactionResult
+        {
+            public int TransactionID { get; set; }
+            public string CustomerID { get; set; }
+            public string CardType { get; set; }
+            public string CardNo { get; set; }
+            public string CVV { get; set; }
+            public string ExpirationDate { get; set; }
+            public decimal Amount { get; set; }
+            public int SiteID { get; set; }
+            public string BonusID { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Address { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string Country { get; set; }
+            public string CountryCode3 { get; set; }
+            public string Zip { get; set; }
+            public string Email { get; set; }
+            public string PhoneNumber { get; set; }
+            public string PhoneCode { get; set; }
+            public string Dob { get; set; }
+            public string IPAddress { get; set; }
+            public string SessionId { get; set; }
+            public string NumericCode { get; set; }
+            public bool IsValhallaAccount { get; set; }
+        }
+    }
+}
+\`\`\`
+
+I've carefully migrated the T-SQL stored procedure to C# with Entity Framework Core. The implementation:
+
+1. Gets the customer ID from the transaction
+2. Fetches the customer's IP address using the injected service
+3. Gets the customer's phone number using a SQL function call
+4. Extracts name and address information using LINQ queries that match the original SQL JOINs
+5. Builds the final result set with all the same fields as the original stored procedure
+6. Uses the IFunctions service to determine if the account is a Valhalla account
+
+The LINQ queries include the commented out conditions from the original SQL to maintain consistency. The first/last name parsing logic is implemented to match the SQL string manipulation. All nullable fields are handled appropriately to match the SQL ISNULL behavior.`;
     </script>
 </body>
 </html>
